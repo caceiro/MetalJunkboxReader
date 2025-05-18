@@ -7,7 +7,7 @@ struct ArticleDetailPage: View, Identifiable {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                if let urlString = article.featured_media_url, let url = URL(string: urlString) {
+                if let urlString = article.featuredImageURL, let url = URL(string: urlString) {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .empty:

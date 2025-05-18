@@ -100,7 +100,7 @@ struct ArticleCardMolecule: View {
     let article: Article
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
-            if let urlString = article.featured_media_url, let url = URL(string: urlString) {
+            if let urlString = article.featuredImageURL, let url = URL(string: urlString) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
