@@ -3,6 +3,8 @@ import SwiftUI
 struct ArticleDetailPage: View, Identifiable {
     let id = UUID()
     let article: Article
+    let isFavorite: Bool
+    let onFavoriteToggle: () -> Void
     
     var body: some View {
         ScrollView {
@@ -27,10 +29,14 @@ struct ArticleDetailPage: View, Identifiable {
                         }
                     }
                 }
-                Text(article.title.rendered.htmlStripped)
-                    .font(.largeTitle)
-                    .bold()
-                    .foregroundColor(.brandAccent)
+                HStack(alignment: .top) {
+                    Text(article.title.rendered.htmlStripped)
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.brandAccent)
+                    Spacer()
+                    FavoriteButtonAtom(isFavorite: isFavorite, action: onFavoriteToggle)
+                }
                 Text(article.date.prefix(10))
                     .font(.subheadline)
                     .foregroundColor(.secondary)

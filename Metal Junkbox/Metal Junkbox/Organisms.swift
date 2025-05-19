@@ -3,6 +3,7 @@ import SwiftUI
 struct ArticleListOrganism: View {
     @StateObject private var viewModel = ArticleListViewModel()
     @State private var selectedArticle: Article?
+    @State private var favoriteIDs: Set<Int> = []
     
     var body: some View {
         content
@@ -46,7 +47,17 @@ struct ArticleListOrganism: View {
         List {
             ForEach(viewModel.articles) { article in
                 Button(action: { selectedArticle = article }) {
-                    ArticleCardMolecule(article: article)
+                    ArticleCardMolecule(
+                        article: article,
+                        isFavorite: favoriteIDs.contains(article.id),
+                        onFavoriteToggle: {
+                            if favoriteIDs.contains(article.id) {
+                                favoriteIDs.remove(article.id)
+                            } else {
+                                favoriteIDs.insert(article.id)
+                            }
+                        }
+                    )
                 }
                 .buttonStyle(PlainButtonStyle())
                 .onAppear {
@@ -68,7 +79,17 @@ struct ArticleListOrganism: View {
             viewModel.refresh()
         }
         .sheet(item: $selectedArticle) { article in
-            ArticleDetailPage(article: article)
+            ArticleDetailPage(
+                article: article,
+                isFavorite: favoriteIDs.contains(article.id),
+                onFavoriteToggle: {
+                    if favoriteIDs.contains(article.id) {
+                        favoriteIDs.remove(article.id)
+                    } else {
+                        favoriteIDs.insert(article.id)
+                    }
+                }
+            )
         }
     }
 }
@@ -98,6 +119,8 @@ struct EventPlaceholderOrganism: View {
 // MARK: - Molecules
 struct ArticleCardMolecule: View {
     let article: Article
+    let isFavorite: Bool
+    let onFavoriteToggle: () -> Void
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             if let urlString = article.featuredImageURL, let url = URL(string: urlString) {
@@ -131,8 +154,25 @@ struct ArticleCardMolecule: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+            Spacer()
+            FavoriteButtonAtom(isFavorite: isFavorite, action: onFavoriteToggle)
         }
         .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Atoms
+struct FavoriteButtonAtom: View {
+    let isFavorite: Bool
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: isFavorite ? "star.fill" : "star")
+                .foregroundColor(isFavorite ? .yellow : .gray)
+                .imageScale(.large)
+                .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+        }
+        .buttonStyle(BorderlessButtonStyle())
     }
 }
 
